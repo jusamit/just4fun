@@ -1,0 +1,178 @@
+{
+      "BuildEieHeader" : "Map",
+      "SecurityToken" : "Application Token",
+      "DataType" : "No PII+PHI",
+      "Backend" : "IIB",
+      "Errorhandlingpolicy": "Standard Policy",
+      "Consumer":"External",
+      "Mutual Auth between Consumer and APIC" : "Not Required"
+}
+
+
+
+Clinical Secure Messaging Eligibility Feature Deliverables -
+
+1. EDB Orchestration Updates
+2. Request/Response Updates [CommunicationStatus.xsd]
+3. Service CCD Updates 
+	a. Aetna Health for Features API - GPS Eligibility
+	b. Clinical API - Clinical Eligibility
+	c. GPS API - for Status Update
+4. NFRs Updates per new template
+5. Sample Request/Response 
+
+
+----
+
+OBO -
+•	OnBehalfOfRequest  - Not storing anywhere
+•	OnBehalfOfMembershipId - Storing at the service request object. Different than the membership id of requestor
+•	Patient Name - Existing field
+•	Relationship To Subscriber - Already available with membership record. Not required to be passed.
+
+
+---
+
+UAF
+
+SF Caching option - Relationship of CSR, Plan Sponsor, Groups at per user session.
+
+Scenarios - Data coming through APIs may have additional filtering requirements
+
+Read - 
+
+Update - 
+
+Record/Field leavel restrictions -
+
+Record Level - Based on Plan Sponsor, the filtering can be done
+	Complexity - One member id assoicated with multiple PSU id. (Cumb id)
+	Need membership id for filtering.
+
+
+Field Level - Complex
+
+
+\\winp-sfs-008\asdarchitect\EAA ResourceManagement\
+
+--- OBO
+
+Finalized Mapping Sheet
+Finalized Payload Structure, Sample Message
+Finalized Changes to Autodoc Service in IIB
+
+Change 1 - Event Payload for Secure Message. Two Fields Added.
+
+Change 2 - EIE_EDBMember_GPS_AutoDocument.esql 
+Call gps_membership for OnBehalfOf Member if OnBehalfOfRequest is TRUE
+Set OBO Membership Record ID for OBO
+
+Change 3 - GPSSupport_Routines.esql - Line 347
+Set Membership Reference from the environment variable for OBO
+
+Change 4 - EIE_EDBConstituent_GPSContact_SF_Compute.esql - Line 168
+Set Membership Record ID for OBO 
+
+----
+•	What is AH approach to address this earlier communicated requirement – All contextual data that is associated with a thread on creation should be returned when retrieving the thread via Read Threads API.
+•	Is salesforce scope covered in your proposal for data model and relevant workflow updates for storing new contextual data ( GPS and Clinical end) ?
+
+InputValidation.esql
+
+Changes Needed In Module - EIE_EDBCommunication_CreateMessages_v1_REST_MF_InputValidation
+
+----------------------
+
+
+Salesforc API Standardization
+
+1. Interface Catalog - Do not exist
+2. Only Secure Messaging API is the only place where SF is a provider
+	a. Some of the SM APIs can be invoked with SOQL queries; contract may or may not adhere to DIM specifications.
+	b. If there are multiple workflows behind the custom API, no single standard contract defined as of today.
+
+
+NFRs - SA to finalize.
+
+1. Get transaction volumes or extrapolate
+2. Evaluate end-to-end response time
+3. Confirm with Business, get agreement and communicate to Integration team
+4. Communicate Performance Team via QB request during testing
+5. Feedback loop from performance/business for final volumes.
+
+
+
+Existing Standards - Confirm with IA Domain (e.g. Jivan)
+
+Master - Golden Copy
+Path1 - Prod
+Path2 - Dev
+Path3 - Support
+
+DEV/QA are per path
+Stress, UAT(?), Prod are unique
+
+Clinical - Prod code update
+OBO - 
+
+
+-----
+Attachment
+
+Send Message
+
+--> Send Message ----> Message ID + [Salesforce Access Token]
+Attach ---> Fork -> Create Attachment ID record with Message ID
+
+--> Acknowledgement with Failed Attachment scan results
+
+
+
+DP Options for Token Management 
+1 - Input Request from AH provides SF Access Token
+2 - xTremeScale Cache to get SF Access Token
+3 - IIB Token Mgmt Service 
+4 - SF Token Mgmt Service + Cache
+
+
+OAuth 2.0 JWT Bearer Token Flow
+This flow uses a certificate to sign the JWT request and doesn’t require explicit user interaction --> Access Token
+
+With the OAuth 2.0 JWT bearer token flow, the client posts a JWT to the Salesforce OAuth token endpoint. Salesforce processes the JWT, which includes a digital signature, and issues an access token based on prior approval of the app.
+
+DP (impersonating AH) will need to be set up as a 'Connected App' in Salesforce.
+
+
+--------------------------------
+
+1. IAG Priority
+	
+2. Handover/Transition 
+	a. Modelling Artifacts
+	b. Service Interface Artifacts
+	c. Schedule
+3. Development Team support stories in PI 13
+	a. Java
+	b. DBA
+
+
+
+
+
+--------------------------------------------------------------------------------------------------
+
+IAG Review Process
+
+Checklist.
+
+
+ITPR041510 - EM-SE-Intelligent Agent -Arch (WID-1655)
+
+
+
+
+
+
+
+
+
